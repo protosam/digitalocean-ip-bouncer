@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digitalocean-ip-bouncer
+  labels:
+    app: digitalocean-ip-bouncer
+spec:
+  replicas: 1 # DO NOT INCREMENT THIS
+  selector:
+    matchLabels:
+      app: digitalocean-ip-bouncer
+  template:
+    metadata:
+      labels:
+        app: digitalocean-ip-bouncer
+    spec:
+      containers:
+      - name: digitalocean-ip-bouncer
+        image: ghcr.io/protosam/digitalocean-ip-bouncer:v1.0
+        env:
+          - name: DIGITALOCEAN_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: do-ip-bouncer
+                key: DIGITALOCEAN_ACCESS_TOKEN
+          - name: DIGITALOCEAN_FLOATING_IP
+            valueFrom:
+              secretKeyRef:
+                name: do-ip-bouncer
+                key: DIGITALOCEAN_FLOATING_IP
