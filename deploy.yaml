@@ -17,6 +17,7 @@ spec:
       containers:
       - name: digitalocean-ip-bouncer
         image: ghcr.io/protosam/digitalocean-ip-bouncer:v1.0
+        imagePullPolicy: IfNotPresent
         env:
           - name: DIGITALOCEAN_ACCESS_TOKEN
             valueFrom:
