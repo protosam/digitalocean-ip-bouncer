@@ -6,7 +6,7 @@ This is useful for automated recovery when a node goes down.
 ## On Kubernetes
 Installation steps are as follows. Be sure to fill in `DIGITALOCEAN_ACCESS_TOKEN` and `DIGITALOCEAN_FLOATING_IP`.
 ```text
-$ kubectl -n kube-system create secret generic do-ip-bouncer --from-literal=DIGITALOCEAN_ACCESS_TOKEN=${DIGITALOCEAN_ACCESS_TOKEN} --from-literal=DIGITALOCEAN_FLOATING_IP=${DIGITALOCEAN_FLOATING_IP}
+$ kubectl -n kube-system create secret generic digitalocean-ip-bouncer --from-literal=DIGITALOCEAN_ACCESS_TOKEN=${DIGITALOCEAN_ACCESS_TOKEN} --from-literal=DIGITALOCEAN_FLOATING_IP=${DIGITALOCEAN_FLOATING_IP}
 $ kubectl -n kube-system apply -f https://raw.githubusercontent.com/protosam/digitalocean-ip-bouncer/master/manifests/statefulset.yaml
 $ kubectl -n kube-system rollout status statefulset/digitalocean-ip-bouncer --watch --timeout=10m
 ```
