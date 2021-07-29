@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - port: 4000
-      name: raft
+      name: gossip
   selector:
     app: digitalocean-ip-bouncer
 ---
@@ -41,7 +41,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000
-              name: raft
+              name: gossip
           env:
             - name: DIGITALOCEAN_ACCESS_TOKEN
               valueFrom:
