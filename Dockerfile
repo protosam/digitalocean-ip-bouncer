@@ -1,5 +1,8 @@
-FROM digitalocean/doctl:1-latest
-RUN apk add -U jq curl
-RUN ln -s /app/doctl /bin/doctl
-COPY ./ip-bouncer.sh /usr/src/ip-bouncer.sh
-ENTRYPOINT /bin/bash /usr/src/ip-bouncer.sh
+FROM python:3-alpine
+
+COPY ./src /usr/src
+RUN apk add -U bash && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /usr/src/requirements.txt
+
+ENTRYPOINT bash /usr/src/entry.sh

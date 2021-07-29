@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: do-ip-bouncer
+  labels:
+    app: do-ip-bouncer
+spec:
+  ports:
+    - port: 4000
+      name: raft
+  selector:
+    app: do-ip-bouncer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: do-ip-bouncer
+spec:
+  serviceName: do-ip-bouncer
+  replicas: 3
+  selector:
+    matchLabels:
+      app: do-ip-bouncer
+  template:
+    metadata:
+      labels:
+        app: do-ip-bouncer
+    spec:
+      terminationGracePeriodSeconds: 10
+      affinity:
+        podAntiAffinity:                                 
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app: do-ip-bouncer
+      containers:
+        - name: do-ip-bouncer
+          image: ghcr.io/protosam/digitalocean-ip-bouncer:v2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+              name: raft
+          volumeMounts:
+            - name: config-map
+              mountPath: /usr/src
+          env:
+            - name: DIGITALOCEAN_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: do-ip-bouncer
+                  key: DIGITALOCEAN_ACCESS_TOKEN
+            - name: DIGITALOCEAN_FLOATING_IP
+              valueFrom:
+                secretKeyRef:
+                  name: do-ip-bouncer
+                  key: DIGITALOCEAN_FLOATING_IP
+            - name: K8S_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            # service name pods will be served through
+            # this is used to join the pod to the cluster
+            - name: SERVICE_NAME
+              value: do-ip-bouncer
+      volumes:
+        - name: config-map
+          configMap:
+            name: do-ip-bouncer
+  updateStrategy:
+    type: RollingUpdate
